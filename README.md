@@ -2,8 +2,10 @@
 
 This repository is intended to distribute JSON schemas used inside METRO.digital.
 
-## How to add a schema to VSCode to validate `yaml` files?
+## How to add a JSON schema to VSCode to validate `yaml` files?
 
+1. This requires to have a special plugin installed.
+    It is the plugin *YAML Language Support by Red Hat.*
 1. Go to the menue *File-->Preferences-->Settings*
 1. Decide whether you want to do this change for every project (tab *User*) or 
     only for a single project (tab *Workspace*)
