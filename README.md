@@ -33,3 +33,5 @@ Some useful information on a schema level.
 
 This schema is only supporting validation
 for [WaaS v2](https://github.com/metro-digital-inner-source/waas/blob/master/documentation/apiVersion/waas-v2/v2.yaml).
+
+See the corresponding [How To video](https://web.microsoftstream.com/video/4ff1da56-af4d-4a09-9c35-6a53603e2f6a).
