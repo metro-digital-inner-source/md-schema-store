@@ -6,12 +6,12 @@ This repository is intended to distribute JSON schemas used inside METRO.digital
 
 1. This requires to have a special plugin installed.
     It is the plugin *YAML Language Support by Red Hat.*
-1. Go to the menue *File-->Preferences-->Settings*
-1. Decide whether you want to do this change for every project (tab *User*) or 
+1. Go to the menu *File-->Preferences-->Settings*
+1. Decide whether you want to do this change for every project (tab *User*) or
     only for a single project (tab *Workspace*)
 1. Search for *yaml schema*
-1. Find the section *Yaml: Schemas* on the right hand side and 
-    klick on *Edit in settings.json*
+1. Find the section *Yaml: Schemas* on the right hand side and
+    click on *Edit in settings.json*
 1. Add the schema for a file
 
     ```yaml
