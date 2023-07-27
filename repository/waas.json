@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
   "title": "JSON Schema for WaaS v2",
   "description": "Get a GitHub workflow to deploy your dockerized application into Kubernetes",
   "type": "object",
@@ -96,8 +96,110 @@
         }
       }
     },
+    "isBuildProfile": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "const": "build"
+        }
+      }
+    },
+    "profileWithLocalBuilderProvider": {
+      "type": "object",
+      "required": ["name", "environment"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "environment": { "const": "build" },
+        "secretsProvider": { "$ref": "#/definitions/secretsProvider" },
+        "builderProvider": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 0,
+          "maxProperties": 1,
+          "properties": {
+            "local": {
+              "$ref": "#/definitions/builderProviderLocal"
+            }
+          }
+        }
+      }
+    },
+    "profileWithGCPBuilderProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "environment"],
+      "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "environment": { "const": "build" },
+        "builderProvider": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["gcp"],
+          "minProperties": 0,
+          "maxProperties": 1,
+          "properties": {
+            "gcp": {
+              "$ref": "#/definitions/builderProviderGCP"
+            }
+          }
+        }
+      }
+    },
+    "builderProviderGCP": {
+      "type": "object",
+      "required": ["service"],
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "service": {
+          "type": "string",
+          "enum": ["cloud-build"]
+        },
+        "projectId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["builder"],
+          "properties": {
+            "builder": {
+              "enum": ["docker"]
+            }
+          }
+        }
+      }
+    },
+    "builderProviderLocal": {
+      "type": "object",
+      "required": ["service"],
+      "additionalProperties": false,
+      "properties": {
+        "service": {
+          "type": "string",
+          "enum": ["docker"]
+        }
+      }
+    },
+    "builderProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "gcp": {
+          "$ref": "#/definitions/builderProviderGCP"
+        },
+        "local": {
+          "$ref": "#/definitions/builderProviderLocal"
+        }
+      }
+    },
     "name": {
       "type": "string",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$",
       "minLength": 1
     },
     "deploy": {
@@ -125,6 +227,101 @@
           "additionalProperties": false
         }
       }
+    },
+    "buildProfile": {
+      "type": "object",
+      "required": ["name", "environment"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "environment": { "const": "build" },
+        "builderProvider": { "$ref": "#/definitions/builderProvider" },
+        "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
+      },
+      "dependentSchemas": {
+        "secretsProvider": {
+          "properties": {
+            "builderProvider": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "local": {
+                  "$ref": "#/definitions/builderProviderLocal"
+                }
+              },
+              "errorMessage": {
+                "additionalProperties": "`secretsProvider` is not allowed with `gcp` builderProvider"
+              }
+            }
+          }
+        }
+      }
+    },
+    "deployProfile": {
+      "type": "object",
+      "required": ["name", "environment", "runtimeProvider"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "environment": { "$ref": "#/definitions/environment" },
+        "deploy": { "$ref": "#/definitions/deploy" },
+        "runtimeProvider": { "$ref": "#/definitions/runtimeProvider" },
+        "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
+      }
+    },
+    "profileWithGCPRuntimeProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "environment", "runtimeProvider"],
+      "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "environment": { "$ref": "#/definitions/environment" },
+        "deploy": { "$ref": "#/definitions/deploy" },
+        "runtimeProvider": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gcp": {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "service": {
+                    "const": "gke"
+                  }
+                }
+              },
+              "then": { "$ref": "#/definitions/runtimeProviderGKE" },
+              "else": { "$ref": "#/definitions/runtimeProviderCloudRun" }
+            }
+          }
+        },
+        "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
+      }
+    },
+    "profileWithMetroRuntimeProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "environment", "runtimeProvider"],
+      "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "environment": { "$ref": "#/definitions/environment" },
+        "deploy": { "$ref": "#/definitions/deploy" },
+        "runtimeProvider": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "metro": {
+              "type": "object",
+              "properties": {
+                "service": {
+                  "const": "kubernetes"
+                }
+              }
+            }
+          }
+        },
+        "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
+      }
     }
   },
   "properties": {
@@ -145,39 +342,26 @@
     },
     "profiles": {
       "type": "array",
+      "if": {
+        "contains": {
+          "$ref": "#/definitions/profileWithGCPBuilderProvider"
+        },
+        "minContains": 1,
+        "maxContains": 1
+      },
+      "then": {
+        "not": {
+          "contains": {
+            "$ref": "#/definitions/profileWithMetroRuntimeProvider"
+          }
+        },
+        "errorMessage": "`gcp` is opted as `builderProvider`. Hence, `gcp` is the only allowed `runtimeProvider`"
+      },
       "minItems": 1,
       "items": {
-        "if": {
-          "type": "object",
-          "properties": {
-            "environment": {
-              "const": "build"
-            }
-          }
-        },
-        "then": {
-          "type": "object",
-          "required": ["name", "environment"],
-          "additionalProperties": false,
-          "properties": {
-            "name": { "$ref": "#/definitions/name" },
-            "environment": { "$ref": "#/definitions/environment" },
-            "deploy": { "$ref": "#/definitions/deploy" },
-            "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
-          }
-        },
-        "else": {
-          "type": "object",
-          "required": ["name", "environment", "runtimeProvider"],
-          "additionalProperties": false,
-          "properties": {
-            "name": { "$ref": "#/definitions/name" },
-            "environment": { "$ref": "#/definitions/environment" },
-            "deploy": { "$ref": "#/definitions/deploy" },
-            "runtimeProvider": { "$ref": "#/definitions/runtimeProvider" },
-            "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
-          }
-        }
+        "if": { "$ref": "#/definitions/isBuildProfile" },
+        "then": { "$ref": "#/definitions/buildProfile" },
+        "else": { "$ref": "#/definitions/deployProfile" }
       }
     }
   }
