@@ -234,6 +234,10 @@
       "additionalProperties": false,
       "properties": {
         "name": { "$ref": "#/definitions/name" },
+        "containerImageFloatingTag": {
+          "type": "string",
+          "minLength": 1
+        },
         "environment": { "const": "build" },
         "builderProvider": { "$ref": "#/definitions/builderProvider" },
         "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
@@ -264,6 +268,10 @@
       "properties": {
         "name": { "$ref": "#/definitions/name" },
         "environment": { "$ref": "#/definitions/environment" },
+        "containerImageFloatingTag": {
+          "type": "string",
+          "minLength": 1
+        },
         "deploy": { "$ref": "#/definitions/deploy" },
         "runtimeProvider": { "$ref": "#/definitions/runtimeProvider" },
         "secretsProvider": { "$ref": "#/definitions/secretsProvider" }
