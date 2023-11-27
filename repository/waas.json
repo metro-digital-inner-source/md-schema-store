@@ -333,6 +333,36 @@
     }
   },
   "properties": {
+    "customBuildWorkflow": {
+      "type": "object",
+      "required": ["filename"],
+      "additionalProperties": false,
+      "properties": {
+        "filename": {
+          "type": "string",
+          "pattern": "^.*(.yaml|.yml)$"
+        },
+        "cacheOutput": {
+          "type": "object",
+          "required": ["path"],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "restoreKeys": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
     "apiVersion": {
       "type": "string",
       "enum": ["waas/latest", "waas/v2"]
