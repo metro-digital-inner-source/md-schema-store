@@ -234,9 +234,9 @@
       "additionalProperties": false,
       "properties": {
         "name": { "$ref": "#/definitions/name" },
-        "containerImageFloatingTag": {
-          "type": "string",
-          "minLength": 1
+        "enableContainerImageFloatingTag": {
+          "type": "boolean",
+          "enum": [true, false]
         },
         "environment": { "const": "build" },
         "builderProvider": { "$ref": "#/definitions/builderProvider" },
@@ -268,9 +268,9 @@
       "properties": {
         "name": { "$ref": "#/definitions/name" },
         "environment": { "$ref": "#/definitions/environment" },
-        "containerImageFloatingTag": {
-          "type": "string",
-          "minLength": 1
+        "enableContainerImageFloatingTag": {
+          "type": "boolean",
+          "enum": [true, false]
         },
         "deploy": { "$ref": "#/definitions/deploy" },
         "runtimeProvider": { "$ref": "#/definitions/runtimeProvider" },
